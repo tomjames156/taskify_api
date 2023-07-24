@@ -27,10 +27,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-# ALLOWED_HOSTS = [config('ALLOWED_HOST')]
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [config('ALLOWED_HOST')]
 
-# CSRF_TRUSTED_ORIGINS = [config('TRUSTED_ORIGIN')]
+CSRF_TRUSTED_ORIGINS = [config('TRUSTED_ORIGIN')]
 
 
 # Application definition
@@ -55,7 +54,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1), # this one causes the user to have to log in often
     "ROTATE_REFRESH_TOKENS": True, # this is true then the user is only logged out if they have not been on the app for the token lifetime else they token will automatically refresh itself and keep the user logged in
     "BLACKLIST_AFTER_ROTATION": True,
@@ -191,10 +190,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# CORS_ALLOWED_ORIGINS =  [
-#     config('TRUSTED_ORIGIN'),
-#     config('DEFAULT_ORIGIN'),
-#     config('DEV_ORIGIN')
-# ]
-
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS =  [
+    config('TRUSTED_ORIGIN'),
+    config('DEFAULT_ORIGIN'),
+    config('DEV_ORIGIN')
+]
