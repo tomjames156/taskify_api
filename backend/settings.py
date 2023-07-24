@@ -27,9 +27,10 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = [config('ALLOWED_HOST')]
+# ALLOWED_HOSTS = [config('ALLOWED_HOST')]
+ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = [config('TRUSTED_ORIGIN')]
+# CSRF_TRUSTED_ORIGINS = [config('TRUSTED_ORIGIN')]
 
 
 # Application definition
