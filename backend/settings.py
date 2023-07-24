@@ -54,8 +54,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1), # this one causes the user to have to log in often
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30), # this one causes the user to have to log in often
     "ROTATE_REFRESH_TOKENS": True, # this is true then the user is only logged out if they have not been on the app for the token lifetime else they token will automatically refresh itself and keep the user logged in
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
