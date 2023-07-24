@@ -29,7 +29,10 @@ DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = [config('ALLOWED_HOST')]
 
-CSRF_TRUSTED_ORIGINS = [config('TRUSTED_ORIGIN')]
+CSRF_TRUSTED_ORIGINS = [
+    config('TRUSTED_ORIGIN'), 
+    config('FRONTEND_ORIGIN')
+]
 
 
 # Application definition
@@ -192,6 +195,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS =  [
     config('TRUSTED_ORIGIN'),
+    config('FRONTEND_ORIGIN'),
     config('DEFAULT_ORIGIN'),
     config('DEV_ORIGIN')
 ]
