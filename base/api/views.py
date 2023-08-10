@@ -8,8 +8,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-from base.models import Note
-from .serializers import NoteSerializer
+from base.models import Task
+from .serializers import TaskSerializer
 
 from django.contrib import messages
 
@@ -33,14 +33,14 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 @api_view(['GET'])
 def get_routes(request):
-    routes = ['/api/token', '/api/token/refresh', '/api/notes']
+    routes = ['/api/token', '/api/token/refresh', '/api/tasks']
     return Response(routes)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_notes(request):
+def get_tasks(request):
     user = request.user
-    notes = Note.objects.filter(user=user).order_by('-date_created')
-    serializer = NoteSerializer(notes, many=True)
+    tasks = Task.objects.filter(user=user).order_by('-date_created')
+    serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)

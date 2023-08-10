@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
-class Note(models.Model):
+class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     body = models.TextField(blank=False)
     date_created = models.DateTimeField(auto_now=False, blank=False)
@@ -14,7 +14,7 @@ class Note(models.Model):
         ('#ffa0a1', 'red-theme'),
         ('#b99aff', 'purple-theme')
     ]
-    note_colour = models.TextField(choices=colours, max_length=7, blank=False, null=False)
+    task_colour = models.TextField(choices=colours, max_length=7, blank=False, null=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.body[:30]}"

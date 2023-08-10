@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from base.models import Note
+from base.models import Task
 
-class NoteSerializer(ModelSerializer):
+class TaskSerializer(ModelSerializer):
     class Meta:
-        model = Note
-        fields = ['id', 'body', 'date_created', 'note_colour', 'is_new']
+        model = Task
+        fields = ['id', 'body', 'date_created', 'task_colour', 'is_new']
