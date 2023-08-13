@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -12,7 +13,10 @@ from base.models import Task
 from .serializers import TaskSerializer
 
 from django.contrib import messages
+from datetime import timedelta, datetime
+from django.utils import timezone
 
+from .utils import *
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -33,14 +37,34 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 @api_view(['GET'])
 def get_routes(request):
-    routes = ['/api/token', '/api/token/refresh', '/api/tasks']
+    routes = ['/api/token', '/api/token/refresh', '/api/tasks', '/api/tasks/completed', '/api/tasks/recent', '/api/tasks/incomplete']
     return Response(routes)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_tasks(request):
-    user = request.user
-    tasks = Task.objects.filter(user=user).order_by('-date_created')
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
+def all_tasks(request):
+    return get_all_tasks(request)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def completed_tasks(request):
+    return get_completed_tasks(request)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def new_tasks(request):
+    return get_new_tasks(request)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recent_tasks(request):
+    return get_recent_tasks(request)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def incomplete_tasks(request):
+    return get_incomplete_tasks(request)

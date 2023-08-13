@@ -15,12 +15,13 @@ class Task(models.Model):
         ('#b99aff', 'purple-theme')
     ]
     task_colour = models.TextField(choices=colours, max_length=7, blank=False, null=False)
+    completed = models.BooleanField(default=False, null=False, blank=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.body[:30]}"
     
     def is_new(self):
-        if self.date_created.day == timezone.now().day:
+        if ((self.date_created.day == timezone.now().day) and (self.completed == False)):
             return True
         else:
             return False
