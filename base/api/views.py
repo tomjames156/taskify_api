@@ -68,3 +68,17 @@ def recent_tasks(request):
 @permission_classes([IsAuthenticated])
 def incomplete_tasks(request):
     return get_incomplete_tasks(request)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def tasks_urgency(request):
+    return get_tasks_urgency(request)
+
+
+@api_view(['GET', 'POST', 'PUT'])
+def task_details(request, pk):
+    if request.method == 'GET':
+        return get_task(request, pk)
+    elif request.method == 'PUT':
+        return update_task(request, pk)

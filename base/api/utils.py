@@ -48,6 +48,25 @@ def get_incomplete_tasks(request):
     return Response(serializer.data)
 
 
+def get_tasks_urgency(request):
+    tasks = Task.objects.filter(user=request.user, completed=False).order_by('due_date')
+    serializer = TaskSerializer(tasks, many=True)
+    return Response(serializer.data)
+
+
+def get_task(request, pk):
+    task = Task.objects.get(pk=pk)
+    serializer = TaskSerializer(task, many=False)
+    return Response(serializer.data)
+
+
+def update_task(request, pk):
+    task = Task.objects.get(pk=pk)
+    serializer = TaskSerializer(instance=task, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
 api_routes = [
     {
         'Endpoint': '/token/',
@@ -59,3 +78,6 @@ api_routes = [
         'description': 'Returns an array of notes'
     }
 ]
+
+
+# todo add image field to the user model
