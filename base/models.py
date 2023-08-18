@@ -7,11 +7,12 @@ from datetime import timedelta
 tomorrow = timezone.now() + timedelta(days=1)
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    header = models.TextField(blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    header = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    date_created = models.DateTimeField(auto_now=False, blank=False)
+    date_created = models.DateTimeField(auto_now=False, blank=False, null=False)
     due_date = models.DateTimeField(default=tomorrow, blank=False, null=False)
+    last_updated = models.DateTimeField(auto_now=True)
     colours = [
         ('#34ccff', 'blue-theme'),
         ('#e4f78f', 'green-theme'),
@@ -19,11 +20,11 @@ class Task(models.Model):
         ('#ffa0a1', 'red-theme'),
         ('#b99aff', 'purple-theme')
     ]
-    task_colour = models.TextField(choices=colours, max_length=7, blank=False, null=False)
+    task_colour = models.TextField(choices=colours, default='#ffc983', max_length=7, blank=False, null=False)
     completed = models.BooleanField(default=False, null=False, blank=False)
 
     def __str__(self):
-        return f"{self.user.username} - {self.body[:30]}"
+        return f"{self.user.username} - {self.header[:30]}"
     
     def is_new(self):
         if ((self.date_created.day == timezone.now().day) and (self.completed == False)):
