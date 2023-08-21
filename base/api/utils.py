@@ -1,5 +1,5 @@
-from base.models import Task
-from .serializers import TaskSerializer
+from base.models import Task, UserProfile
+from .serializers import TaskSerializer, ProfileSerializer
 from .views import *
 
 from django.utils import timezone
@@ -15,7 +15,7 @@ tomorrow = timezone.now() + timedelta(days=1)
 
 
 def get_all_tasks(request):
-    tasks = Task.objects.filter(user=default_user, date_created__lte=timezone.now()).order_by('-date_created')
+    tasks = Task.objects.filter(user=request.user, date_created__lte=timezone.now()).order_by('-date_created')
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 
@@ -65,13 +65,16 @@ def get_task(request, pk):
 
 def create_task(request):
     data = request.data
-    task = Task.objects.create(user=default_user, date_created=timezone.now(), due_date=tomorrow, header=data['header'], description=data['description'])
+    if data['due_date'] != '':
+        task = Task.objects.create(user=request.user, date_created=timezone.now(), description=data['description'], due_date=data['due_date'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
+    else:
+        task = Task.objects.create(user=request.user, date_created=timezone.now(), description=data['description'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
     serializer = TaskSerializer(instance=task, many=False)
     return Response(serializer.data)
 
 
 def update_task(request, pk):
-    task = Task.objects.get(pk=pk)
+    task = Task.objects.get(user=request.user, pk=pk)
     serializer = TaskSerializer(instance=task, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -80,8 +83,15 @@ def update_task(request, pk):
 
 
 def delete_task(request, pk):
-    Task.objects.get(pk=pk).delete()    
+    Task.objects.get(user=request.user, pk=pk).delete()    
     return Response('Successfully deleted')
+
+
+def get_user_profile(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    serializer = ProfileSerializer(user_profile, many=False)
+    return Response(serializer.data)
+    
 
 api_routes = [
     {

@@ -17,4 +17,5 @@ urlpatterns = [
     path('task/<str:pk>', task_details, name='task_details'),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('profile', user_profile, name="user_profile")
 ]

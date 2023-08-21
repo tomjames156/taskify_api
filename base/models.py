@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from datetime import timedelta
+import datetime
+from dateutil import parser
 
-tomorrow = timezone.now() + timedelta(days=1)
+tomorrow = timezone.now() + datetime.timedelta(days=1)
 
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -33,7 +34,7 @@ class Task(models.Model):
             return False
     
     def urgency(self):
-        if (self.completed == False) and (self.due_date > timezone.now()):
+        if (self.completed == False) and (parser.parse(str(self.due_date)) > timezone.now()):
             diff = self.due_date - timezone.now()
             if diff.days == 0:
                 return 1
@@ -43,7 +44,29 @@ class Task(models.Model):
                 return 3
             elif diff.days >= 3:
                 return 4
-        elif (self.completed == False) and (self.due_date < timezone.now()):
+        elif (self.completed == False) and (parser.parse(str(self.due_date)) < timezone.now()):
             return 0
         elif self.completed == True:
             return 5
+        
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bio = models.CharField(max_length=100, blank=True)
+    profile_pic = models.ImageField(upload_to='profile-pics', blank=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+
+# class Friend(models.Model):
+#     """Represents a friend of a user"""
+#     friend_user = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+#     friending_user = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+#     date_friended = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         unique_together = ('friend_user', 'friending_user')
+
+#     def __str__(self):
+#         return f"{self.friend_user} {self.friending_user}"

@@ -42,7 +42,7 @@ def get_routes(request):
 
 
 @api_view(['GET', 'POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def all_tasks(request):
     if request.method == 'GET':
         return get_all_tasks(request)
@@ -80,6 +80,7 @@ def tasks_urgency(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def task_details(request, pk):
     if request.method == 'GET':
         return get_task(request, pk)
@@ -87,3 +88,10 @@ def task_details(request, pk):
         return update_task(request, pk)
     elif request.method == 'DELETE':
         return delete_task(request, pk)
+    
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    if request.method == 'GET':
+        return get_user_profile(request)
