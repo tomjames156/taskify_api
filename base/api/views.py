@@ -80,7 +80,7 @@ def tasks_urgency(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def task_details(request, pk):
     if request.method == 'GET':
         return get_task(request, pk)
@@ -91,7 +91,9 @@ def task_details(request, pk):
     
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
         return get_user_profile(request)
+    elif request.method == 'PUT':
+        return update_user_profile(request)

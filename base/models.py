@@ -7,8 +7,19 @@ from dateutil import parser
 
 tomorrow = timezone.now() + datetime.timedelta(days=1)
 
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_profile')
+    bio = models.CharField(max_length=100, blank=True)
+    profile_pic = models.ImageField(upload_to='task_manager/public/profile_pics', blank=True)
+    location = models.CharField(max_length=150, blank=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_profile', null=True)
     header = models.TextField(blank=True)
     description = models.TextField(blank=True)
     date_created = models.DateTimeField(auto_now=False, blank=False, null=False)
@@ -49,15 +60,6 @@ class Task(models.Model):
         elif self.completed == True:
             return 5
         
-
-class UserProfile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    bio = models.CharField(max_length=100, blank=True)
-    profile_pic = models.ImageField(upload_to='profile-pics', blank=True)
-    
-    def __str__(self):
-        return f"{self.user.username}'s profile"
-
 
 # class Friend(models.Model):
 #     """Represents a friend of a user"""

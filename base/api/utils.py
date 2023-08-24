@@ -1,5 +1,5 @@
 from base.models import Task, UserProfile
-from .serializers import TaskSerializer, ProfileSerializer
+from .serializers import TaskSerializer, ProfileSerializer, UserSerializer
 from .views import *
 
 from django.utils import timezone
@@ -88,9 +88,27 @@ def delete_task(request, pk):
 
 
 def get_user_profile(request):
-    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile = UserProfile.objects.get(user=default_user)
     serializer = ProfileSerializer(user_profile, many=False)
     return Response(serializer.data)
+
+def update_user_profile(request):
+    try:
+        user_profile = UserProfile.objects.get(user=default_user)
+        user_profile.bio = request.data['bio']
+        user_profile.user.first_name = request.data['firstname']
+        user_profile.user.last_name = request.data['lastname']
+        user_profile.user.email = request.data['email']
+        user_profile.save()
+        serializer = ProfileSerializer(user_profile, many=False)
+        return Response(serializer.data)
+    except (UserProfile.DoesNotExist, ValueError): 
+        return Response("E no show")
+    
+
+# def delete_account(request):
+#     try: 
+
     
 
 api_routes = [
