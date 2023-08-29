@@ -58,17 +58,22 @@ def get_tasks_urgency(request):
 
 
 def get_task(request, pk):
-    task = Task.objects.get(pk=pk)
+    task = Task.objects.get(pk=pk, user=default_user)
     serializer = TaskSerializer(task, many=False)
     return Response(serializer.data)
 
 
 def create_task(request):
     data = request.data
+    user = User.objects.get(username=request.user.username)
     if data['due_date'] != '':
-        task = Task.objects.create(user=request.user, date_created=timezone.now(), description=data['description'], due_date=data['due_date'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
+        task = Task.objects.create(user=user, date_created=timezone.now(), description=data['description'], due_date=data['due_date'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
+        task.user_profile = UserProfile.objects.get(user=user)
+        task.save()
     else:
-        task = Task.objects.create(user=request.user, date_created=timezone.now(), description=data['description'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
+        task = Task.objects.create(user=user, date_created=timezone.now(), description=data['description'], header=data['header'], task_colour=data['task_colour'], completed=data['completed'])
+        task.user_profile = UserProfile.objects.get(user=user)
+        task.save()
     serializer = TaskSerializer(instance=task, many=False)
     return Response(serializer.data)
 

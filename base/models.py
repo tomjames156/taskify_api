@@ -18,7 +18,7 @@ def upload_to(instance, filename):
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_profile')
     bio = models.CharField(max_length=200, blank=True)
-    profile_pic = models.ImageField(upload_to=upload_to, blank=True)
+    profile_pic = models.ImageField(upload_to=upload_to, blank=True, default='no_pfp.jpeg')
     location = models.CharField(max_length=150, blank=True)
     
     def __str__(self):

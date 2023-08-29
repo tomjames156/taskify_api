@@ -41,6 +41,11 @@ class TaskSerializer(serializers.ModelSerializer):
         extra_kwargs = {'user': {'required': False}, 'date_created': {'required': False} }
 
 
+class TaskNumbersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['id']
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     tasks = ProfileTaskSerializer(source='user.tasks', many=True, read_only=True)
@@ -55,3 +60,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['username', 'firstname', 'lastname', 'bio', 'profile_pic', 'date_joined', 'email', 'location', 'tasks']
 
         extra_kwargs = {'email': {'required': False}, 'firstname': {'required': False}}
+
+
+class SimpleUserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    firstname = serializers.CharField(source='user.first_name', read_only=True)
+    lastname = serializers.CharField(source='user.last_name', read_only=True)
+    date_joined = serializers.DateTimeField(source='user.date_joined', read_only=True)
+    tasks = TaskNumbersSerializer(source="user.tasks", many=True, read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'firstname', 'lastname', 'bio', 'profile_pic', 'location', 'tasks', 'date_joined']

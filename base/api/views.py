@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 from base.models import Task
-from .serializers import TaskSerializer, ProfilePicSerializer
+from .serializers import ProfilePicSerializer, SimpleUserProfileSerializer, UserSerializer
 
 from django.contrib import messages
 from datetime import timedelta, datetime
@@ -100,7 +100,13 @@ def user_profile(request):
         return get_user_profile(request)
     elif request.method == 'PUT':
         return update_user_profile(request)
-    
+
+
+@api_view(['GET'])
+def get_users(request):
+    users = UserProfile.objects.all()
+    serializer = SimpleUserProfileSerializer(users, many=True)
+    return Response(serializer.data)
 
 class ProfilePicUpload(APIView):
     parser_classes = [MultiPartParser, FormParser]
