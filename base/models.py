@@ -5,12 +5,20 @@ from django.utils import timezone
 import datetime
 from dateutil import parser
 
+import os
+
 tomorrow = timezone.now() + datetime.timedelta(days=1)
+
+def upload_to(instance, filename):
+    now = timezone.now()
+    base, extension = os.path.splitext(filename.lower())
+    milliseconds = now.microsecond // 1000
+    return f"users/{instance.pk}/{now:%Y%m%d%H%M%S}{milliseconds}{extension}"
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_profile')
-    bio = models.CharField(max_length=100, blank=True)
-    profile_pic = models.ImageField(upload_to='task_manager/public/profile_pics', blank=True)
+    bio = models.CharField(max_length=200, blank=True)
+    profile_pic = models.ImageField(upload_to=upload_to, blank=True)
     location = models.CharField(max_length=150, blank=True)
     
     def __str__(self):
@@ -59,7 +67,7 @@ class Task(models.Model):
             return 0
         elif self.completed == True:
             return 5
-        
+
 
 # class Friend(models.Model):
 #     """Represents a friend of a user"""

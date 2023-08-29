@@ -1,8 +1,11 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.views import APIView
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
+# import FileUploadParser
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -10,7 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 from base.models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, ProfilePicSerializer
 
 from django.contrib import messages
 from datetime import timedelta, datetime
@@ -80,7 +83,7 @@ def tasks_urgency(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def task_details(request, pk):
     if request.method == 'GET':
         return get_task(request, pk)
@@ -91,9 +94,74 @@ def task_details(request, pk):
     
 
 @api_view(['GET', 'PUT'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
         return get_user_profile(request)
     elif request.method == 'PUT':
         return update_user_profile(request)
+    
+
+class ProfilePicUpload(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        curr_user_profile = UserProfile.objects.get(user=request.user)
+        serializer = ProfilePicSerializer(data=request.data, instance=curr_user_profile)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+# @api_view(['POST'])
+# @parser_classes([MultiPartParser, FormParser])

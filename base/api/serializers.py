@@ -2,6 +2,16 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from base.models import Task, UserProfile
 
+class ProfilePicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_pic']
+
+    def save(self, *args, **kwargs):
+        if self.instance.profile_pic:
+            self.instance.profile_pic.delete()
+            return super().save(*args, **kwargs)
+
 class ProfileTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
