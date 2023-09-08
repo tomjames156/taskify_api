@@ -14,10 +14,11 @@ urlpatterns = [
     path('tasks/incomplete/', incomplete_tasks, name='incomplete_tasks'),
     path('tasks/recent/', recent_tasks, name='recent_tasks'),
     path('tasks/urgency/', tasks_urgency, name='tasks_urgency'),
-    path('task/<str:pk>', task_details, name='task_details'),
+    path('task/<str:pk>/', task_details, name='task_details'),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('profile', user_profile, name="user_profile"),
     path('profile/update_profile_image', ProfilePicUpload.as_view(), name='update_profile_img'),
+    path('public_profile/<str:username>/', get_user_public_profile, name="get_user_public_profile"),
     path('users/', get_users, name='get_users')
 ]

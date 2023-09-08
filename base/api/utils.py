@@ -1,5 +1,5 @@
 from base.models import Task, UserProfile
-from .serializers import TaskSerializer, ProfileSerializer, ProfilePicSerializer
+from .serializers import TaskSerializer, ProfileSerializer, SimpleUserProfileSerializer, PublicProfileSerializer
 from .views import *
 
 from django.utils import timezone
@@ -9,6 +9,11 @@ from datetime import timedelta, datetime
 
 from rest_framework import status
 from rest_framework.response import Response
+
+from django.core.mail import send_mail
+from backend.settings import *
+
+import re
 
 default_user = User.objects.get(username="t0m1")
 tomorrow = timezone.now() + timedelta(days=1)
@@ -58,7 +63,7 @@ def get_tasks_urgency(request):
 
 
 def get_task(request, pk):
-    task = Task.objects.get(pk=pk, user=default_user)
+    task = Task.objects.get(pk=pk, user=request.user)
     serializer = TaskSerializer(task, many=False)
     return Response(serializer.data)
 
@@ -104,11 +109,60 @@ def update_user_profile(request):
         user_profile.user.first_name = request.data['firstname']
         user_profile.user.last_name = request.data['lastname']
         user_profile.user.email = request.data['email']
+        user_profile.location = request.data['location']
         user_profile.save()
         serializer = ProfileSerializer(user_profile, many=False)
         return Response(serializer.data)
     except (UserProfile.DoesNotExist, ValueError): 
         return Response("E no show")
+
+
+def users(request):
+    users = UserProfile.objects.all()
+    serializer = SimpleUserProfileSerializer(users, many=True)
+    return Response(serializer.data)
+
+
+def user(request, pk):
+    user = UserProfile.objects.get(pk=pk)
+    serializer = SimpleUserProfileSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+def create_user(request):
+    # todo - Add an option to sign in as a guest by creating a guest account and logging into it. But don't allow following on the guest account
+    data = request.data
+    new_user = User.objects.create_user(username=data['username'].lower(), first_name=data['firstname'], last_name=data['lastname'], email=data['email'], password=data['password1'])
+    UserProfile.objects.create(user=new_user, email_confirmed=False)
+    send_mail("Taskify App", "Welcome to the Taskify App by Tomi.co. \nManage all your tasks efficiently and let others send tasks to you🙂.", EMAIL_HOST_USER, recipient_list=[new_user.email], fail_silently=False)
+    return Response('Account Successfully created')
+
+
+def search_users(request):
+    data = request.data
+    query = data['query']
+    search_matches = []
+    searchRegex = re.compile(rf"^{query}.*")
+    all_user_profiles = UserProfile.objects.all()
+    for user_profile in all_user_profiles:
+        if searchRegex.findall(user_profile.user.username) != []:
+            search_matches.append(user_profile)
+    serializer = SimpleUserProfileSerializer(search_matches, many=True)
+    return Response(serializer.data)
+
+
+def user_public_profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+        profile = UserProfile.objects.get(user=user)
+        serializer = PublicProfileSerializer(profile, many=False)
+        return Response(serializer.data)
+    except (User.DoesNotExist, UserProfile.DoesNotExist, ValueError):
+        return Response('User Does Not Exist')
+        # Learn how to show errors
+    
+
+# def send_email(request):
 
 
 api_routes = [
@@ -122,6 +176,3 @@ api_routes = [
         'description': 'Returns an array of notes'
     }
 ]
-
-
-# todo add image field to the user model

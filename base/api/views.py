@@ -102,12 +102,6 @@ def user_profile(request):
         return update_user_profile(request)
 
 
-@api_view(['GET'])
-def get_users(request):
-    users = UserProfile.objects.all()
-    serializer = SimpleUserProfileSerializer(users, many=True)
-    return Response(serializer.data)
-
 class ProfilePicUpload(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsAuthenticated]
@@ -122,52 +116,21 @@ class ProfilePicUpload(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET','POST', 'PUT'])
+def get_users(request):
+    if request.method == 'GET':
+        return users(request)
+    elif request.method == 'POST':
+        return create_user(request)
+    elif request.method == 'PUT':
+        return search_users(request)
 
+@api_view(['GET'])
+def get_user_public_profile(request, username):
+    if request.method == 'GET':
+        return user_public_profile(request, username)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-# @api_view(['POST'])
-# @parser_classes([MultiPartParser, FormParser])
+@api_view(['GET'])
+def get_user(request, pk):
+    if request.method == 'GET':
+        return user(request, pk)
