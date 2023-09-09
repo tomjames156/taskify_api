@@ -117,6 +117,7 @@ class ProfilePicUpload(APIView):
 
 
 @api_view(['GET','POST', 'PUT'])
+@permission_classes([IsAuthenticated])
 def get_users(request):
     if request.method == 'GET':
         return users(request)
@@ -126,11 +127,13 @@ def get_users(request):
         return search_users(request)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_public_profile(request, username):
     if request.method == 'GET':
         return user_public_profile(request, username)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user(request, pk):
     if request.method == 'GET':
         return user(request, pk)

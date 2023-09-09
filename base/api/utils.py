@@ -63,9 +63,14 @@ def get_tasks_urgency(request):
 
 
 def get_task(request, pk):
-    task = Task.objects.get(pk=pk, user=request.user)
-    serializer = TaskSerializer(task, many=False)
-    return Response(serializer.data)
+    try:
+        task = Task.objects.get(pk=pk, user=request.user)
+        serializer = TaskSerializer(task, many=False)
+        return Response(serializer.data)
+    except(Task.DoesNotExist, ValueError):
+        content = {'Task Not Found': 'Task Does Not Exist'}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
+
 
 
 def create_task(request):
@@ -114,7 +119,8 @@ def update_user_profile(request):
         serializer = ProfileSerializer(user_profile, many=False)
         return Response(serializer.data)
     except (UserProfile.DoesNotExist, ValueError): 
-        return Response("E no show")
+        content = {'Failed Profile Update': 'Profile not updated'}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
 
 
 def users(request):
@@ -158,8 +164,8 @@ def user_public_profile(request, username):
         serializer = PublicProfileSerializer(profile, many=False)
         return Response(serializer.data)
     except (User.DoesNotExist, UserProfile.DoesNotExist, ValueError):
-        return Response('User Does Not Exist')
-        # Learn how to show errors
+        content = {'User Not Found': 'Username not registered'}
+        return Response(content, status=status.HTTP_404_NOT_FOUND)
     
 
 # def send_email(request):
