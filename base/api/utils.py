@@ -1,5 +1,5 @@
-from base.models import Task, UserProfile
-from .serializers import TaskSerializer, ProfileSerializer, SimpleUserProfileSerializer, PublicProfileSerializer
+from base.models import Task, UserProfile, UserFriending
+from .serializers import TaskSerializer, ProfileSerializer, SimpleUserProfileSerializer, PublicProfileSerializer, UserFriendsSerializer
 from .views import *
 
 from django.utils import timezone
@@ -15,7 +15,7 @@ from backend.settings import *
 
 import re
 
-default_user = User.objects.get(username="t0m1")
+default_user = User.objects.get(username="n0n0")
 tomorrow = timezone.now() + timedelta(days=1)
 
 
@@ -98,8 +98,9 @@ def update_task(request, pk):
 
 
 def delete_task(request, pk):
-    Task.objects.get(user=request.user, pk=pk).delete()    
-    return Response('Successfully deleted')
+    Task.objects.get(user=request.user, pk=pk).delete()
+    content = {'Delete Task': 'Task Successfully deleted'}   
+    return Response(content, status=status.HTTP_204_NO_CONTENT)
 
 
 def get_user_profile(request):
@@ -141,7 +142,8 @@ def create_user(request):
     new_user = User.objects.create_user(username=data['username'].lower(), first_name=data['firstname'], last_name=data['lastname'], email=data['email'], password=data['password1'])
     UserProfile.objects.create(user=new_user, email_confirmed=False)
     send_mail("Taskify App", "Welcome to the Taskify App by Tomi.co. \nManage all your tasks efficiently and let others send tasks to you🙂.", EMAIL_HOST_USER, recipient_list=[new_user.email], fail_silently=False)
-    return Response('Account Successfully created')
+    content = {"Created Account": 'Successfully created account'}
+    return Response(content, status=status.HTTP_201_CREATED)
 
 
 def search_users(request):
@@ -166,7 +168,20 @@ def user_public_profile(request, username):
     except (User.DoesNotExist, UserProfile.DoesNotExist, ValueError):
         content = {'User Not Found': 'Username not registered'}
         return Response(content, status=status.HTTP_404_NOT_FOUND)
-    
+
+
+def get_friends(request):
+    # user = User.objects.get(username=default_user.username)
+    user_friends = request.user.followers.all()
+    serializer = UserFriendsSerializer(user_friends, many=True)
+    return Response(serializer.data)
+
+def friendship(request):
+    print(request.data)
+    friend = User.objects.get(username=request.data['username'])
+    UserFriending.objects.create(user_id=request.user, friending_user_id=friend)
+    content = {'Friendship initiated': 'Successfully sent friend request'}
+    return Response(content, status=status.HTTP_201_CREATED)
 
 # def send_email(request):
 

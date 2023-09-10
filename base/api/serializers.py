@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from base.models import Task, UserProfile
+from base.models import Task, UserProfile, UserFriending
 
 class ProfilePicSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +40,12 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'user_profile', 'header', 'description', 'date_created', 'due_date', 'last_updated', 'is_new', 'urgency', 'task_colour', 'completed']
         extra_kwargs = {'user': {'required': False}, 'date_created': {'required': False} }
 
+class UserFriendsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserFriending
+
+        fields = ['user_id', 'date_friended']
+
 
 class TaskNumbersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,6 +55,7 @@ class TaskNumbersSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     tasks = ProfileTaskSerializer(source='user.tasks', many=True, read_only=True)
+    followers = UserFriendsSerializer(source='user.followers', many=True, read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     firstname = serializers.CharField(source='user.first_name', read_only=True)
     lastname = serializers.CharField(source='user.last_name', read_only=True)
@@ -57,7 +64,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'firstname', 'lastname', 'bio', 'profile_pic', 'date_joined', 'email', 'location', 'tasks', 'email_confirmed']
+        fields = ['username', 'firstname', 'lastname', 'bio', 'profile_pic', 'followers', 'date_joined', 'email', 'location', 'tasks', 'email_confirmed']
 
         extra_kwargs = {'email': {'required': False}, 'firstname': {'required': False}}
 

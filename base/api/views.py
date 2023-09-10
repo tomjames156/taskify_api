@@ -94,7 +94,7 @@ def task_details(request, pk):
     
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def user_profile(request):
     if request.method == 'GET':
         return get_user_profile(request)
@@ -116,13 +116,11 @@ class ProfilePicUpload(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET','POST', 'PUT'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def get_users(request):
     if request.method == 'GET':
         return users(request)
-    elif request.method == 'POST':
-        return create_user(request)
     elif request.method == 'PUT':
         return search_users(request)
 
@@ -137,3 +135,18 @@ def get_user_public_profile(request, username):
 def get_user(request, pk):
     if request.method == 'GET':
         return user(request, pk)
+
+
+@api_view(['POST'])
+def signup_user(request): 
+    if request.method == 'POST':
+        return create_user(request)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def friends(request):
+    if request.method == 'GET':
+        return get_friends(request)
+    elif request.method == 'PUT':
+        return friendship(request)

@@ -20,5 +20,7 @@ urlpatterns = [
     path('profile', user_profile, name="user_profile"),
     path('profile/update_profile_image', ProfilePicUpload.as_view(), name='update_profile_img'),
     path('public_profile/<str:username>/', get_user_public_profile, name="get_user_public_profile"),
-    path('users/', get_users, name='get_users')
+    path('friends/', friends, name="friends"),
+    path('users/', get_users, name='get_users'),
+    path('users/signup/', signup_user, name='signup_user')
 ]

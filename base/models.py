@@ -70,14 +70,18 @@ class Task(models.Model):
             return 5
 
 
-# class Friend(models.Model):
-#     """Represents a friend of a user"""
-#     friend_user = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
-#     friending_user = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
-#     date_friended = models.DateTimeField(auto_now_add=True)
+class UserFriending(models.Model):
+    """Represents a friending of another user"""
+    user_id = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    friending_user_id = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    date_friended = models.DateTimeField(auto_now_add=True, db_index=True)
 
-#     class Meta:
-#         unique_together = ('friend_user', 'friending_user')
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user_id', 'friending_user_id'], name='unique followers')
+        ]
 
-#     def __str__(self):
-#         return f"{self.friend_user} {self.friending_user}"
+        ordering = ['-date_friended']
+
+    def __str__(self):
+        return f"{self.user_id} followed {self.friending_user_id}"
