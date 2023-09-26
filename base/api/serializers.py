@@ -64,7 +64,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'firstname', 'lastname', 'bio', 'profile_pic', 'followers', 'date_joined', 'email', 'location', 'tasks', 'email_confirmed']
+        fields = ['user', 'username', 'firstname', 'lastname', 'bio', 'profile_pic', 'followers', 'date_joined', 'email', 'location', 'tasks', 'email_confirmed']
 
         extra_kwargs = {'email': {'required': False}, 'firstname': {'required': False}}
 
@@ -90,4 +90,4 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
 
-        fields = ['username', 'firstname', 'lastname', 'email', 'date_joined', 'profile_pic', 'bio', 'location']
+        fields = ['user', 'username', 'firstname', 'lastname', 'email', 'date_joined', 'profile_pic', 'bio', 'location']

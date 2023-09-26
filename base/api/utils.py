@@ -15,7 +15,7 @@ from backend.settings import *
 
 import re
 
-default_user = User.objects.get(username="n0n0")
+default_user = User.objects.get(username="t0m1")
 tomorrow = timezone.now() + timedelta(days=1)
 
 
@@ -104,7 +104,7 @@ def delete_task(request, pk):
 
 
 def get_user_profile(request):
-    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile = UserProfile.objects.get(user=default_user)
     serializer = ProfileSerializer(user_profile, many=False)
     return Response(serializer.data)
 
@@ -128,6 +128,8 @@ def users(request):
     users = UserProfile.objects.all()
     serializer = SimpleUserProfileSerializer(users, many=True)
     return Response(serializer.data)
+
+    # all_following = [following.friending_user_id for following in following_list]  gets all users you're already following
 
 
 def user(request, pk):
@@ -171,9 +173,12 @@ def user_public_profile(request, username):
 
 
 def get_friends(request):
-    # user = User.objects.get(username=default_user.username)
-    user_friends = request.user.followers.all()
+    user = User.objects.get(username=request.user.username)
+    user_friends = user.followers.all()
+    users_friends = list(user_friends)
+    friends_list = [UserProfile.objects.get(user=friend.user_id) for friend in users_friends]
     serializer = UserFriendsSerializer(user_friends, many=True)
+    serializer = SimpleUserProfileSerializer(friends_list, many=True)
     return Response(serializer.data)
 
 def friendship(request):
