@@ -86,8 +86,10 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     firstname = serializers.CharField(source='user.first_name', read_only=True)
     lastname = serializers.CharField(source="user.last_name", read_only=True)
     date_joined = serializers.CharField(source="user.date_joined", read_only=True)
+    is_followed = serializers.BooleanField(read_only=True)
+    friends = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = UserProfile
 
-        fields = ['user', 'username', 'firstname', 'lastname', 'email', 'date_joined', 'profile_pic', 'bio', 'location']
+        fields = ['user', 'username', 'firstname', 'lastname', 'email', 'date_joined', 'profile_pic', 'bio', 'location', 'is_followed', 'friends']

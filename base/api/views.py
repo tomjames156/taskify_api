@@ -144,9 +144,20 @@ def signup_user(request):
 
 
 @api_view(['GET', 'PUT'])
-# @permission_classes([IsAuthenticated])
 def friends(request):
     if request.method == 'GET':
         return get_friends(request)
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         return friendship(request)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def followers(request):
+    if request.method == 'GET':
+        return get_followers(request)
+    
+@api_view(['GET'])
+def following(request):
+    if request.method == 'GET':
+        return get_following(request)

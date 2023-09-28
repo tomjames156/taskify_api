@@ -16,6 +16,7 @@ from backend.settings import *
 import re
 
 default_user = User.objects.get(username="t0m1")
+user_1 = User.objects.get(username="trasher") 
 tomorrow = timezone.now() + timedelta(days=1)
 
 
@@ -104,7 +105,7 @@ def delete_task(request, pk):
 
 
 def get_user_profile(request):
-    user_profile = UserProfile.objects.get(user=default_user)
+    user_profile = UserProfile.objects.get(user=request.user)
     serializer = ProfileSerializer(user_profile, many=False)
     return Response(serializer.data)
 
@@ -165,24 +166,52 @@ def user_public_profile(request, username):
     try:
         user = User.objects.get(username=username)
         profile = UserProfile.objects.get(user=user)
+        profile.is_followed = list(request.user.following.filter(user_id=request.user, friending_user_id=user)) != [] and username != request.user.username
+        profile.friends = profile.is_followed and list(user.following.filter(user_id=user, friending_user_id=request.user)) != []
         serializer = PublicProfileSerializer(profile, many=False)
         return Response(serializer.data)
     except (User.DoesNotExist, UserProfile.DoesNotExist, ValueError):
         content = {'User Not Found': 'Username not registered'}
         return Response(content, status=status.HTTP_404_NOT_FOUND)
-
+    
 
 def get_friends(request):
+    users_friends = []
+
     user = User.objects.get(username=request.user.username)
-    user_friends = user.followers.all()
-    users_friends = list(user_friends)
-    friends_list = [UserProfile.objects.get(user=friend.user_id) for friend in users_friends]
-    serializer = UserFriendsSerializer(user_friends, many=True)
+    user_following = user.following.all().order_by('-date_friended')
+    users_following = list(user_following)
+    following_list = [friend.friending_user_id for friend in users_following]
+    
+    for following_user in following_list:
+        follows_back = list(UserFriending.objects.filter(user_id=following_user, friending_user_id=request.user)) != []
+        if follows_back:
+            users_friends.append(following_user)
+
+    friends_list = [UserProfile.objects.get(user=friend) for friend in users_friends]
     serializer = SimpleUserProfileSerializer(friends_list, many=True)
     return Response(serializer.data)
 
+
+def get_followers(request):
+    user = User.objects.get(username=request.user.username)
+    user_friends = user.followers.all().order_by('-date_friended')
+    users_friends = list(user_friends)
+    friends_list = [UserProfile.objects.get(user=friend.user_id) for friend in users_friends]
+    serializer = SimpleUserProfileSerializer(friends_list, many=True)
+    return Response(serializer.data)
+
+
+def get_following(request):
+    user = User.objects.get(username=request.user.username)
+    user_following = user.following.all().order_by('-date_friended')
+    users_following = list(user_following)
+    following_list = [UserProfile.objects.get(user=friend.friending_user_id) for friend in users_following]
+    serializer = SimpleUserProfileSerializer(following_list, many=True)
+    return Response(serializer.data)
+
+
 def friendship(request):
-    print(request.data)
     friend = User.objects.get(username=request.data['username'])
     UserFriending.objects.create(user_id=request.user, friending_user_id=friend)
     content = {'Friendship initiated': 'Successfully sent friend request'}
