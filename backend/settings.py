@@ -22,16 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [config('HOST_1')]
 
-CSRF_TRUSTED_ORIGINS = [
-    config('TRUSTED_ORIGIN')
-]
+CSRF_TRUSTED_ORIGINS= [config('ORIGIN_1')]
 
 
 # Application definition
@@ -185,18 +183,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = 587
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
-EMAIL_USE_TLS = True
-
-
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST = config('EMAIL_HOST')
 # EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'stickynotesapp605@gmail.com'
-# EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 # EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = False
