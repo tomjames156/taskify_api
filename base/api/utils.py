@@ -21,7 +21,7 @@ tomorrow = timezone.now() + timedelta(days=1)
 
 
 def get_all_tasks(request):
-    tasks = Task.objects.filter(user=request.user, date_created__lte=timezone.now()).order_by('-date_created')
+    tasks = Task.objects.filter(user=default_user, date_created__lte=timezone.now()).order_by('-date_created')
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data)
 

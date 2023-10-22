@@ -45,7 +45,7 @@ def get_routes(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def all_tasks(request):
     if request.method == 'GET':
         return get_all_tasks(request)
